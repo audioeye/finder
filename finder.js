@@ -63,6 +63,9 @@ export function finder(initialInput, options) {
         count++;
         if (unique(candidate, input, rootDocument)) {
             foundPaths.push(candidate);
+            if (input.length === 1) {
+                break;
+            }
         }
     }
     if (foundPaths.length === 0) {
@@ -75,29 +78,32 @@ export function finder(initialInput, options) {
         ...optimize(firstPath, input, config, rootDocument, startTime),
     ];
     initialOptimized.sort(byPenalty);
-    const firstOptimizedPath = initialOptimized[0];
-    const maxPenaltyLength = penalty(firstOptimizedPath);
-    const maxLength = firstOptimizedPath.length;
-    const otherPermutations = otherPaths
-        .map((foundPath) => [
-        ...permuations({
-            path: foundPath,
-            input,
-            maximumLength: maxLength,
-            maximumScore: maxPenaltyLength,
-            rootDocument,
-        }),
-    ])
-        .flat();
-    const optimized = otherPermutations
-        .map((foundPath) => [
-        foundPath,
-        ...optimize(foundPath, input, config, rootDocument, startTime),
-    ])
-        .flat();
-    // Add other viable permutations
-    optimized.push(firstOptimizedPath);
-    optimized.sort(byPenalty);
+    let optimized = initialOptimized;
+    if (input.length > 1) {
+        const firstOptimizedPath = initialOptimized[0];
+        const maxPenaltyLength = penalty(firstOptimizedPath);
+        const maxLength = firstOptimizedPath.length;
+        const otherPermutations = otherPaths
+            .map((foundPath) => [
+            ...permuations({
+                path: foundPath,
+                input,
+                maximumLength: maxLength,
+                maximumScore: maxPenaltyLength,
+                rootDocument,
+            }),
+        ])
+            .flat();
+        optimized = otherPermutations
+            .map((foundPath) => [
+            foundPath,
+            ...optimize(foundPath, input, config, rootDocument, startTime),
+        ])
+            .flat();
+        // Add other viable permutations
+        optimized.push(firstOptimizedPath);
+        optimized.sort(byPenalty);
+    }
     if (optimized.length > 0) {
         return selector(optimized[0]);
     }

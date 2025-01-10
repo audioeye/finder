@@ -109,6 +109,9 @@ export function finder(
     count++
     if (unique(candidate, input, rootDocument)) {
       foundPaths.push(candidate)
+      if (input.length === 1) {
+        break
+      }
     }
   }
 
@@ -124,31 +127,35 @@ export function finder(
     ...optimize(firstPath, input, config, rootDocument, startTime),
   ]
   initialOptimized.sort(byPenalty)
-  const firstOptimizedPath = initialOptimized[0]!
-  const maxPenaltyLength = penalty(firstOptimizedPath)
-  const maxLength = firstOptimizedPath.length
+  let optimized = initialOptimized
+  if (input.length > 1) {
+    const firstOptimizedPath = initialOptimized[0]!
+    const maxPenaltyLength = penalty(firstOptimizedPath)
+    const maxLength = firstOptimizedPath.length
 
-  const otherPermutations = otherPaths
-    .map((foundPath) => [
-      ...permuations({
-        path: foundPath,
-        input,
-        maximumLength: maxLength,
-        maximumScore: maxPenaltyLength,
-        rootDocument,
-      }),
-    ])
-    .flat()
+    const otherPermutations = otherPaths
+      .map((foundPath) => [
+        ...permuations({
+          path: foundPath,
+          input,
+          maximumLength: maxLength,
+          maximumScore: maxPenaltyLength,
+          rootDocument,
+        }),
+      ])
+      .flat()
 
-  const optimized = otherPermutations
-    .map((foundPath) => [
-      foundPath,
-      ...optimize(foundPath, input, config, rootDocument, startTime),
-    ])
-    .flat()
-  // Add other viable permutations
-  optimized.push(firstOptimizedPath)
-  optimized.sort(byPenalty)
+    optimized = otherPermutations
+      .map((foundPath) => [
+        foundPath,
+        ...optimize(foundPath, input, config, rootDocument, startTime),
+      ])
+      .flat()
+    // Add other viable permutations
+    optimized.push(firstOptimizedPath)
+    optimized.sort(byPenalty)
+  }
+
   if (optimized.length > 0) {
     return selector(optimized[0])
   }
