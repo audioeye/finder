@@ -96,7 +96,6 @@ describe('selector - multiple elements', function () {
     (inputSelector) => {
       const elements = [...document.querySelectorAll(inputSelector)]
       const selector = finder(elements, {
-        // seedMinLength: 10,
         maxNumberOfPathChecks: 1000,
         className: () => true,
         attr: () => true,
