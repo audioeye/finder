@@ -419,10 +419,6 @@ function* optimize(
         yield* optimize(newPath, input, config, rootDocument, startTime)
       }
     }
-  } else if (path.length <= 2) {
-    if (unique(path, input, rootDocument)) {
-      yield path
-    }
   }
 }
 
