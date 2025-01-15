@@ -2,7 +2,6 @@
   "name": "@medv/finder",
   "version": "4.0.2",
   "description": "CSS Selector Generator",
-  "type": "module",
   "main": "finder.js",
   "types": "finder.d.ts",
   "files": [
