@@ -70,7 +70,7 @@ export function finder(
   if (input.every((element) => element.tagName.toLowerCase() === 'html')) {
     return 'html'
   }
-  const defaults: Options = {
+  const defaults: Required<Options> = {
     root: document.body,
     idName: idName,
     className: className,
@@ -83,7 +83,7 @@ export function finder(
   }
 
   const startTime = new Date()
-  const config = { ...defaults, ...options }
+  const config: Required<Options> = { ...defaults, ...options }
   const rootDocument = findRootDocument(config.root, defaults)
 
   let foundPaths: Knot[][] = []
@@ -164,7 +164,7 @@ export function finder(
 
 function* search(
   input: Element[],
-  config: Options,
+  config: Required<Options>,
   rootDocument: Element | Document,
 ): Generator<Knot[]> {
   const stack: Knot[][] = []
@@ -214,7 +214,7 @@ function wordLike(name: string): boolean {
   return false
 }
 
-function tie(element: Element, config: Options): Knot[] {
+function tie(element: Element, config: Required<Options>): Knot[] {
   const level: Knot[] = []
 
   const elementId = element.getAttribute('id')
@@ -402,7 +402,7 @@ function unique(
 function* optimize(
   path: Knot[],
   input: Element[],
-  config: Options,
+  config: Required<Options>,
   rootDocument: Element | Document,
   startTime: Date,
 ): Generator<Knot[]> {
